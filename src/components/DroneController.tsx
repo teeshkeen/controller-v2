@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { BluetoothManager } from '../utils/BluetoothManager';
 import { DroneControlData } from '../types/bluetooth';
 import { Joystick } from './Joystick';
