@@ -15,15 +15,25 @@ export class BluetoothManager {
     }
 
     try {
+      console.log('Начинаем поиск устройств...');
+      console.log('Ищем устройства с именами:', this.options.deviceNames);
+      
       this.device = await (window as any).navigator.bluetooth.requestDevice({
         filters: this.options.deviceNames.map((name) => ({ namePrefix: name })),
         optionalServices: [this.options.UUID.service],
       });
 
-      if (!this.device || !this.device.gatt) {
+      if (!this.device) {
+        throw new Error('Устройство не выбрано');
+      }
+
+      console.log('Устройство найдено:', this.device.name);
+
+      if (!this.device.gatt) {
         throw new Error('GATT сервер недоступен');
       }
 
+      console.log('Подключаемся к GATT серверу...');
       this.server = await this.device.gatt.connect();
       this.isConnected = true;
       console.log('Подключено к устройству:', this.device.name);
@@ -56,7 +66,11 @@ export class BluetoothManager {
 
   public disconnect(): void {
     if (this.server && this.isConnected) {
-      this.server.disconnect();
+      try {
+        this.server.disconnect();
+      } catch (error) {
+        console.error('Ошибка при отключении:', error);
+      }
     }
     this.server = null;
     this.device = null;
